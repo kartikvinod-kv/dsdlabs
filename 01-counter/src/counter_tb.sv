@@ -30,6 +30,9 @@ module counter_tb();
     // Clock generation
     initial begin
         // Fill in code here
+        clk = 0;
+        forever #5 clk = ~clk;
+        
     end
 
     // Instance of student's module
