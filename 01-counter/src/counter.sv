@@ -19,6 +19,8 @@ module updown_counter(
     output logic [3:0] count // Counter output
 );
 
+    //using always_ff we are telling that the system we are building is sequential and not combinational.
+    // the priority order to execute the tasks are rst_n, load, enable and then if enable is high check for up_down
     always_ff @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             count <= 4'b0000;
