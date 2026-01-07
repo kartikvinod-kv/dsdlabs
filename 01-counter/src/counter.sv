@@ -19,7 +19,19 @@ module updown_counter(
     output logic [3:0] count // Counter output
 );
 
-
+    always_ff @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            count <= 4'b0000;
+        end
+        else if(load) begin
+            if(up_down) begin
+                count <= d_in;
+            else
+                count <= count + 1;
+            end
+        end
+    end
+    
 endmodule
 
 
