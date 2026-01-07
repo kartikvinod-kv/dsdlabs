@@ -1,13 +1,9 @@
 /**
 * updown_counter:
 * A simple up/down counter with load functionality.
-*
-* Features:
-* - 4-bit counter
-* - Asynchronous reset
-* - Load functionality: on load signal, the counter loads the input value
-* - Up/Down counting: controlled by the up_down signal (1 for up, 0 for down)
-* - Enable signal to control counting: when enabled, the counter counts; when disabled, it holds its value
+* - Async Reset (Priority 1)
+* - Synchronous Load (Priority 2)
+* - Enable/Count (Priority 3)
 */
 module updown_counter(
     input logic clk,       // Clock input
@@ -19,21 +15,28 @@ module updown_counter(
     output logic [3:0] count // Counter output
 );
 
-    //using always_ff we are telling that the system we are building is sequential and not combinational.
-    // the priority order to execute the tasks are rst_n, load, enable and then if enable is high check for up_down
+    // Sequential Logic
+    // "posedge clk" makes it synchronous
+    // "negedge rst_n" makes the reset asynchronous
     always_ff @(posedge clk or negedge rst_n) begin
-        if(!rst_n) begin
+        if (!rst_n) begin
+            // 1. Reset Logic (Highest Priority)
             count <= 4'b0000;
+        end 
+        else if (load) begin
+            // 2. Load Logic
+            count <= d_in;
+        end 
+        else if (enable) begin
+            // 3. Counting Logic
+            if (up_down) 
+                count <= count + 1; // Count Up
+            else 
+                count <= count - 1; // Count Down
         end
-        else if(load) begin
-            if(up_down) begin
-                count <= d_in;
-            else
-                count <= count + 1;
-            end
-        end
+        // Implicit "else": if enable is 0, count stays the same.
     end
-    
+
 endmodule
 
 
